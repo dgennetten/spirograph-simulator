@@ -31,6 +31,7 @@ function App() {
 
   // Generate a new layer with current parameters
   const generateLayer = () => {
+    console.log('Generating layer with params:', currentParams);
     setIsGenerating(true);
     
     // Simulate generation delay for better UX
@@ -40,6 +41,8 @@ function App() {
         canvasSettings.centerX,
         canvasSettings.centerY
       );
+      
+      console.log('Generated points:', points.length);
       
       const newLayer: Layer = {
         id: Date.now().toString(),
@@ -52,7 +55,12 @@ function App() {
         params: { ...currentParams }
       };
       
-      setLayers(prev => [...prev, newLayer]);
+      console.log('Created new layer:', newLayer);
+      setLayers(prev => {
+        const newLayers = [...prev, newLayer];
+        console.log('Updated layers:', newLayers.length);
+        return newLayers;
+      });
       setIsGenerating(false);
     }, 100);
   };
@@ -84,6 +92,13 @@ function App() {
   // Clear all layers
   const clearLayers = () => {
     setLayers([]);
+    // Reset canvas zoom and center position
+    setCanvasSettings(prev => ({
+      ...prev,
+      scale: 1,
+      centerX: 400,
+      centerY: 300
+    }));
   };
 
   // Validate current parameters

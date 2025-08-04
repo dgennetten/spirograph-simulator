@@ -34,6 +34,8 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
+      console.log('Canvas rendering with layers:', layers.length);
+
       // Set canvas size
       canvas.width = settings.width;
       canvas.height = settings.height;
@@ -116,11 +118,14 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
     const drawLayers = (ctx: CanvasRenderingContext2D, layers: Layer[], settings: CanvasSettings) => {
       const { scale } = settings;
       
+      console.log('Drawing layers:', layers.length);
+      
       ctx.save();
       ctx.scale(scale, scale);
 
       // Draw layers in order
-      layers.forEach(layer => {
+      layers.forEach((layer, index) => {
+        console.log(`Layer ${index}: visible=${layer.visible}, points=${layer.points.length}`);
         if (!layer.visible || layer.points.length < 2) return;
 
         ctx.save();
