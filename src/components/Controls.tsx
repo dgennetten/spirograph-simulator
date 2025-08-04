@@ -20,6 +20,7 @@ export const Controls: React.FC<ControlsProps> = ({
 }) => {
   const patternType = SpirographCalculator.getPatternType(params);
   const estimatedTime = SpirographCalculator.getEstimatedTime(params);
+  const overlapRevolutions = SpirographCalculator.calculateOverlapRevolutions(params.fixedRadius, params.movingRadius);
 
   const handleParamChange = (key: keyof SpirographParams, value: number) => {
     onParamsChange({
@@ -37,7 +38,8 @@ export const Controls: React.FC<ControlsProps> = ({
       fixedRadius: Math.floor(Math.random() * 150) + 50,
       movingRadius: Math.floor(Math.random() * 80) + 20,
       penDistance: Math.floor(Math.random() * 60) + 10,
-      revolutions: Math.floor(Math.random() * 10) + 1
+      revolutions: Math.floor(Math.random() * 10) + 1,
+      stopOnOverlap: false
     };
     
     // Ensure moving radius is smaller than fixed radius
@@ -127,26 +129,49 @@ export const Controls: React.FC<ControlsProps> = ({
 
       {/* Revolutions */}
       <div className="card">
-        <label className="block text-sm font-medium mb-2">
-          Revolutions: {params.revolutions.toFixed(1)}
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="0.1"
-          value={Math.log10(params.revolutions + 1) * 33.33}
-          onChange={(e) => {
-            const logValue = parseFloat(e.target.value) / 33.33;
-            const revolutions = Math.pow(10, logValue) - 1;
-            handleParamChange('revolutions', revolutions);
-          }}
-          className="slider"
-        />
-        <div className="flex justify-between text-xs text-text-secondary mt-1">
-          <span>1</span>
-          <span>1000</span>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium">
+            Revolutions: {params.stopOnOverlap ? overlapRevolutions.toFixed(1) : params.revolutions.toFixed(1)}
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={params.stopOnOverlap}
+              onChange={(e) => onParamsChange({ ...params, stopOnOverlap: e.target.checked })}
+              className="text-primary"
+            />
+            <span>Stop on overlap</span>
+          </label>
         </div>
+        
+        {!params.stopOnOverlap && (
+          <>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="0.1"
+              value={Math.log10(params.revolutions + 1) * 33.33}
+              onChange={(e) => {
+                const logValue = parseFloat(e.target.value) / 33.33;
+                const revolutions = Math.pow(10, logValue) - 1;
+                handleParamChange('revolutions', revolutions);
+              }}
+              className="slider"
+            />
+            <div className="flex justify-between text-xs text-text-secondary mt-1">
+              <span>1</span>
+              <span>1000</span>
+            </div>
+          </>
+        )}
+        
+        {params.stopOnOverlap && (
+          <div className="text-xs text-text-secondary mt-1">
+            <div>Auto-calculated: {overlapRevolutions.toFixed(1)} revolutions</div>
+            <div>Ratio: {params.fixedRadius}:{params.movingRadius}</div>
+          </div>
+        )}
       </div>
 
       {/* Action Buttons */}
@@ -184,10 +209,10 @@ export const Controls: React.FC<ControlsProps> = ({
         <h4 className="text-sm font-medium mb-3">Quick Presets</h4>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { name: 'Cardioid', params: { fixedRadius: 100, movingRadius: 50, penDistance: 30, revolutions: 2 } },
-            { name: 'Nephroid', params: { fixedRadius: 90, movingRadius: 30, penDistance: 25, revolutions: 3 } },
-            { name: 'Deltoid', params: { fixedRadius: 120, movingRadius: 30, penDistance: 20, revolutions: 4 } },
-            { name: 'Astroid', params: { fixedRadius: 100, movingRadius: 20, penDistance: 15, revolutions: 5 } }
+            { name: 'Cardioid', params: { fixedRadius: 100, movingRadius: 50, penDistance: 30, revolutions: 2, stopOnOverlap: false } },
+            { name: 'Nephroid', params: { fixedRadius: 90, movingRadius: 30, penDistance: 25, revolutions: 3, stopOnOverlap: false } },
+            { name: 'Deltoid', params: { fixedRadius: 120, movingRadius: 30, penDistance: 20, revolutions: 4, stopOnOverlap: false } },
+            { name: 'Astroid', params: { fixedRadius: 100, movingRadius: 20, penDistance: 15, revolutions: 5, stopOnOverlap: false } }
           ].map((preset) => (
             <button
               key={preset.name}

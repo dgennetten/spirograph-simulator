@@ -8,6 +8,7 @@ export interface SpirographParams {
   movingRadius: number;
   penDistance: number;
   revolutions: number;
+  stopOnOverlap: boolean;
 }
 
 export interface Layer {

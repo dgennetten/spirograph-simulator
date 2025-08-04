@@ -2,15 +2,21 @@ import { Point, SpirographParams } from '../types';
 
 export class SpirographCalculator {
   static generatePoints(params: SpirographParams, centerX: number, centerY: number): Point[] {
-    const { fixedRadius, movingRadius, penDistance, revolutions } = params;
+    const { fixedRadius, movingRadius, penDistance, revolutions, stopOnOverlap } = params;
     const points: Point[] = [];
+    
+    // Calculate the actual number of revolutions needed
+    let actualRevolutions = revolutions;
+    if (stopOnOverlap) {
+      actualRevolutions = this.calculateOverlapRevolutions(fixedRadius, movingRadius);
+    }
     
     // Calculate the number of steps based on revolutions
     // Use more steps for higher revolutions to maintain smooth curves
-    const totalSteps = Math.floor(revolutions * 360 * Math.max(1, revolutions / 10));
+    const totalSteps = Math.floor(actualRevolutions * 360 * Math.max(1, actualRevolutions / 10));
     
     for (let i = 0; i <= totalSteps; i++) {
-      const t = (i / totalSteps) * revolutions * 2 * Math.PI;
+      const t = (i / totalSteps) * actualRevolutions * 2 * Math.PI;
       
       // Spirograph formula
       const x = (fixedRadius - movingRadius) * Math.cos(t) + 
@@ -32,7 +38,8 @@ export class SpirographCalculator {
       fixedRadius: 100,
       movingRadius: 50,
       penDistance: 30,
-      revolutions: 2
+      revolutions: 2,
+      stopOnOverlap: false
     };
   }
   
@@ -62,6 +69,34 @@ export class SpirographCalculator {
   
   static getEstimatedTime(params: SpirographParams): number {
     // Rough estimate in seconds
-    return (params.revolutions * 360) / 1000;
+    const actualRevolutions = params.stopOnOverlap 
+      ? this.calculateOverlapRevolutions(params.fixedRadius, params.movingRadius)
+      : params.revolutions;
+    return (actualRevolutions * 360) / 1000;
+  }
+
+  static calculateOverlapRevolutions(fixedRadius: number, movingRadius: number): number {
+    // The number of revolutions needed to complete the pattern
+    // is determined by the ratio of the radii
+    const gcd = this.greatestCommonDivisor(fixedRadius, movingRadius);
+    const simplifiedFixed = fixedRadius / gcd;
+    const simplifiedMoving = movingRadius / gcd;
+    
+    // The pattern completes when the moving circle has rotated
+    // by the least common multiple of the simplified radii
+    const lcm = (simplifiedFixed * simplifiedMoving) / this.greatestCommonDivisor(simplifiedFixed, simplifiedMoving);
+    
+    return lcm / simplifiedMoving;
+  }
+
+  private static greatestCommonDivisor(a: number, b: number): number {
+    a = Math.abs(a);
+    b = Math.abs(b);
+    while (b !== 0) {
+      const temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
   }
 } 
