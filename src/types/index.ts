@@ -20,6 +20,7 @@ export interface Layer {
   visible: boolean;
   points: Point[];
   params: SpirographParams;
+  isPreview?: boolean;
 }
 
 export interface CanvasSettings {

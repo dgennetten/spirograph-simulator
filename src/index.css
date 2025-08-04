@@ -260,7 +260,7 @@ body {
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .card {
     padding: 1rem;
     margin-bottom: 1rem;
@@ -297,5 +297,50 @@ body {
   .panel-tab {
     flex: 1;
     min-width: 120px;
+  }
+}
+
+/* Desktop scrolling for controls */
+@media (min-width: 601px) {
+  .sidebar {
+    height: calc(100vh - 80px); /* Account for header height */
+    overflow: hidden;
+    width: 320px; /* Wider controls for better usability */
+    min-width: 280px; /* Minimum width to prevent too narrow controls */
+  }
+  
+  .sidebar .flex-1 {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .canvas-container {
+    height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* Allow canvas to take remaining space */
+  }
+  
+  .canvas-container canvas {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+}
+
+/* Medium screens - side by side with smaller sidebar */
+@media (min-width: 601px) and (max-width: 1400px) {
+  .sidebar {
+    width: 300px; /* Slightly smaller but still usable */
+    min-width: 260px;
+  }
+}
+
+/* Narrow screens - even smaller but still functional */
+@media (min-width: 601px) and (max-width: 1000px) {
+  .sidebar {
+    width: 280px;
+    min-width: 240px;
   }
 } 

@@ -26,13 +26,40 @@ function App() {
   );
   const [activePanel, setActivePanel] = useState<'controls' | 'layers' | 'export'>('controls');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [livePreview, setLivePreview] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Generate a preview layer for live preview
+  const generatePreviewLayer = (): Layer | null => {
+    if (!livePreview) return null;
+    
+    const points = SpirographCalculator.generatePoints(
+      currentParams,
+      canvasSettings.centerX,
+      canvasSettings.centerY
+    );
+    
+    return {
+      id: 'preview',
+      name: 'Preview',
+      color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+      strokeWidth: 2,
+      opacity: 60, // Semi-transparent for preview
+      visible: true,
+      points,
+      params: { ...currentParams },
+      isPreview: true // Mark as preview layer
+    };
+  };
 
   // Generate a new layer with current parameters
   const generateLayer = () => {
     console.log('Generating layer with params:', currentParams);
     setIsGenerating(true);
+    
+    // Clear live preview when generating
+    setLivePreview(false);
     
     // Simulate generation delay for better UX
     setTimeout(() => {
@@ -139,7 +166,7 @@ function App() {
       {/* Main Content */}
       <div className="flex flex-1 main-layout">
         {/* Sidebar */}
-        <aside className="w-80 bg-surface border-r border-border flex flex-col sidebar">
+        <aside className="bg-surface border-r border-border flex flex-col sidebar">
           {/* Panel Tabs */}
           <div className="flex gap-2 p-4 bg-surface border-b border-border panel-tabs">
             <button
@@ -178,25 +205,27 @@ function App() {
           </div>
 
           {/* Panel Content */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {activePanel === 'controls' && (
-              <Controls
-                params={currentParams}
-                onParamsChange={setCurrentParams}
-                onGenerate={generateLayer}
-                isGenerating={isGenerating}
-                validationError={validationError}
-                paperColor={canvasSettings.paperColor}
-                onPaperColorChange={(color) => {
-                  console.log('App: Paper color changing to:', color);
-                  setCanvasSettings(prev => {
-                    const newSettings = { ...prev, paperColor: color };
-                    console.log('App: New canvas settings:', newSettings);
-                    return newSettings;
-                  });
-                }}
-              />
-            )}
+          <div className="flex-1 overflow-y-auto p-4 md:max-h-screen">
+                         {activePanel === 'controls' && (
+               <Controls
+                 params={currentParams}
+                 onParamsChange={setCurrentParams}
+                 onGenerate={generateLayer}
+                 isGenerating={isGenerating}
+                 validationError={validationError}
+                 paperColor={canvasSettings.paperColor}
+                 onPaperColorChange={(color) => {
+                   console.log('App: Paper color changing to:', color);
+                   setCanvasSettings(prev => {
+                     const newSettings = { ...prev, paperColor: color };
+                     console.log('App: New canvas settings:', newSettings);
+                     return newSettings;
+                   });
+                 }}
+                 livePreview={livePreview}
+                 onLivePreviewChange={setLivePreview}
+               />
+             )}
             
             {activePanel === 'layers' && (
               <LayerPanel
@@ -217,16 +246,16 @@ function App() {
           </div>
         </aside>
 
-        {/* Canvas Area */}
-        <main className="flex-1 flex flex-col canvas-container">
-          <Canvas
-            ref={canvasRef}
-            layers={layers}
-            settings={canvasSettings}
-            onSettingsChange={setCanvasSettings}
-            key={`canvas-${canvasSettings.paperColor}`}
-          />
-        </main>
+                 {/* Canvas Area */}
+         <main className="flex-1 flex flex-col canvas-container">
+           <Canvas
+             ref={canvasRef}
+             layers={[...layers, ...(generatePreviewLayer() ? [generatePreviewLayer()!] : [])]}
+             settings={canvasSettings}
+             onSettingsChange={setCanvasSettings}
+             key={`canvas-${canvasSettings.paperColor}-${livePreview}`}
+           />
+         </main>
       </div>
     </div>
   );

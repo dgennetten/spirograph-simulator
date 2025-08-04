@@ -15,15 +15,15 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
     const [isZooming, setIsZooming] = useState(false);
 
     // Combine refs
-    const combinedRef = (node: HTMLCanvasElement) => {
+    const combinedRef = (node: HTMLCanvasElement | null) => {
       if (ref) {
         if (typeof ref === 'function') {
           ref(node);
-        } else {
-          ref.current = node;
         }
       }
-      canvasRef.current = node;
+      if (node) {
+        (canvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current = node;
+      }
     };
 
         // Initialize canvas
@@ -135,6 +135,13 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
+        // Set dashed line for preview layers
+        if (layer.isPreview) {
+          ctx.setLineDash([5, 5]);
+        } else {
+          ctx.setLineDash([]);
+        }
+
         // Draw path
         ctx.beginPath();
         ctx.moveTo(layer.points[0].x, layer.points[0].y);
@@ -188,10 +195,10 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
     };
 
     return (
-      <div className="flex-1 relative bg-background">
+      <div className="flex-1 relative bg-background flex items-center justify-center">
         <canvas
           ref={combinedRef}
-          className="w-full h-full cursor-grab active:cursor-grabbing"
+          className="max-w-full max-h-full cursor-grab active:cursor-grabbing"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -210,4 +217,4 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       </div>
     );
   }
-); 
+);
