@@ -1,6 +1,6 @@
 # Spirograph Simulator
 
-A beautiful, interactive spirograph simulation app built with React and TypeScript. Create intricate geometric patterns and export them as SVG files perfect for plotting with an AxiDraw or other pen plotters.
+A beautiful, interactive spirograph simulation app built with React and TypeScript. Create intricate geometric patterns and export them as SVG files perfect for plotting with an AxiDraw or other pen plotters. (running at http://spirograph.gennetten.org)
 
 ## ✨ Features
 
