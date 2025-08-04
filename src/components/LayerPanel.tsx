@@ -55,9 +55,15 @@ export const LayerPanel: React.FC<LayerPanelProps> = ({
   }
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Layers ({layers.length})</h3>
+    <div className="space-y-4">
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Layers</h3>
+            <p className="card-subtitle">Manage your patterns</p>
+          </div>
+          <span className="text-lg font-semibold text-primary">{layers.length}</span>
+        </div>
       </div>
 
       <div className="space-y-3">

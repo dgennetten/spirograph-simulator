@@ -8,9 +8,10 @@ export class SVGExporter {
     // Filter visible layers
     const visibleLayers = layers.filter(layer => layer.visible);
     
-    // Generate SVG content
-    let svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+                    // Generate SVG content
+                let svg = `<?xml version="1.0" encoding="UTF-8"?>
+            <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+              <rect width="${width}" height="${height}" fill="${settings.paperColor}" />`;
     
     // Add metadata if requested
     if (includeMetadata) {
@@ -85,12 +86,13 @@ export class SVGExporter {
     URL.revokeObjectURL(url);
   }
   
-  static getDefaultExportSettings(): ExportSettings {
-    return {
-      format: 'svg',
-      width: 800,
-      height: 600,
-      includeMetadata: true
-    };
-  }
+                static getDefaultExportSettings(): ExportSettings {
+                return {
+                  format: 'svg',
+                  width: 800,
+                  height: 600,
+                  includeMetadata: true,
+                  paperColor: '#fff8dc'
+                };
+              }
 } 

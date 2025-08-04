@@ -18,7 +18,8 @@ function App() {
     height: 600,
     centerX: 400,
     centerY: 300,
-    scale: 1
+    scale: 1,
+    paperColor: '#fff8dc'
   });
   const [exportSettings, setExportSettings] = useState<ExportSettings>(
     SVGExporter.getDefaultExportSettings()
@@ -70,7 +71,12 @@ function App() {
 
   // Export SVG
   const exportSVG = () => {
-    const svgContent = SVGExporter.exportToSVG(layers, canvasSettings, exportSettings);
+    // Use canvas paper color for export
+    const exportSettingsWithPaper = {
+      ...exportSettings,
+      paperColor: canvasSettings.paperColor
+    };
+    const svgContent = SVGExporter.exportToSVG(layers, canvasSettings, exportSettingsWithPaper);
     const filename = `spirograph-${Date.now()}.svg`;
     SVGExporter.downloadSVG(svgContent, filename);
   };
@@ -95,20 +101,20 @@ function App() {
             </span>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={clearLayers}
-              className="btn btn-secondary"
+              className="bg-surface border border-border rounded-lg px-6 py-3 text-sm font-medium transition-all hover:border-primary hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={layers.length === 0}
             >
               Clear All
             </button>
             <button
               onClick={exportSVG}
-              className="btn btn-primary"
+              className="bg-primary text-white border border-primary rounded-lg px-6 py-3 text-sm font-medium transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={layers.length === 0}
             >
-              <Download size={16} />
+              <Download size={16} className="inline mr-2" />
               Export SVG
             </button>
           </div>
@@ -116,48 +122,48 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 main-layout">
         {/* Sidebar */}
-        <aside className="w-80 bg-surface border-r border-border flex flex-col">
+        <aside className="w-80 bg-surface border-r border-border flex flex-col sidebar">
           {/* Panel Tabs */}
-          <div className="flex border-b border-border">
+          <div className="flex gap-2 p-4 bg-surface border-b border-border panel-tabs">
             <button
               onClick={() => setActivePanel('controls')}
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-10 text-sm font-medium transition-all rounded-lg ${
                 activePanel === 'controls' 
-                  ? 'text-primary border-b-2 border-primary' 
-                  : 'text-text-secondary hover:text-text'
+                  ? 'bg-primary text-white shadow-sm' 
+                  : 'text-text-secondary hover:text-text hover:bg-border/50'
               }`}
             >
-              <Palette size={16} className="inline mr-2" />
+              <Palette size={18} className={`inline mr-2 ${activePanel === 'controls' ? 'text-white' : 'text-text-secondary'}`} />
               Controls
             </button>
             <button
               onClick={() => setActivePanel('layers')}
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-10 text-sm font-medium transition-all rounded-lg ${
                 activePanel === 'layers' 
-                  ? 'text-primary border-b-2 border-primary' 
-                  : 'text-text-secondary hover:text-text'
+                  ? 'bg-primary text-white shadow-sm' 
+                  : 'text-text-secondary hover:text-text hover:bg-border/50'
               }`}
             >
-              <Layers size={16} className="inline mr-2" />
+              <Layers size={18} className={`inline mr-2 ${activePanel === 'layers' ? 'text-white' : 'text-text-secondary'}`} />
               Layers
             </button>
             <button
               onClick={() => setActivePanel('export')}
-              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-10 text-sm font-medium transition-all rounded-lg ${
                 activePanel === 'export' 
-                  ? 'text-primary border-b-2 border-primary' 
-                  : 'text-text-secondary hover:text-text'
+                  ? 'bg-primary text-white shadow-sm' 
+                  : 'text-text-secondary hover:text-text hover:bg-border/50'
               }`}
             >
-              <Settings size={16} className="inline mr-2" />
+              <Settings size={18} className={`inline mr-2 ${activePanel === 'export' ? 'text-white' : 'text-text-secondary'}`} />
               Export
             </button>
           </div>
 
           {/* Panel Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-4">
             {activePanel === 'controls' && (
               <Controls
                 params={currentParams}
@@ -165,6 +171,15 @@ function App() {
                 onGenerate={generateLayer}
                 isGenerating={isGenerating}
                 validationError={validationError}
+                paperColor={canvasSettings.paperColor}
+                onPaperColorChange={(color) => {
+                  console.log('App: Paper color changing to:', color);
+                  setCanvasSettings(prev => {
+                    const newSettings = { ...prev, paperColor: color };
+                    console.log('App: New canvas settings:', newSettings);
+                    return newSettings;
+                  });
+                }}
               />
             )}
             
@@ -188,12 +203,13 @@ function App() {
         </aside>
 
         {/* Canvas Area */}
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col canvas-container">
           <Canvas
             ref={canvasRef}
             layers={layers}
             settings={canvasSettings}
             onSettingsChange={setCanvasSettings}
+            key={`canvas-${canvasSettings.paperColor}`}
           />
         </main>
       </div>

@@ -9,6 +9,8 @@ interface ControlsProps {
   onGenerate: () => void;
   isGenerating: boolean;
   validationError: string | null;
+  paperColor: string;
+  onPaperColorChange: (color: string) => void;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
@@ -16,7 +18,9 @@ export const Controls: React.FC<ControlsProps> = ({
   onParamsChange,
   onGenerate,
   isGenerating,
-  validationError
+  validationError,
+  paperColor,
+  onPaperColorChange
 }) => {
   const patternType = SpirographCalculator.getPatternType(params);
   const estimatedTime = SpirographCalculator.getEstimatedTime(params);
@@ -51,12 +55,15 @@ export const Controls: React.FC<ControlsProps> = ({
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-4">
       {/* Pattern Type Display */}
       <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Pattern Type</h3>
-          <span className="text-sm text-text-secondary">{patternType}</span>
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Pattern Type</h3>
+            <p className="card-subtitle">Current configuration</p>
+          </div>
+          <span className="text-sm text-text-secondary bg-primary/10 px-2 py-1 rounded">{patternType}</span>
         </div>
         
         {validationError && (
@@ -72,9 +79,13 @@ export const Controls: React.FC<ControlsProps> = ({
 
       {/* Fixed Radius */}
       <div className="card">
-        <label className="block text-sm font-medium mb-2">
-          Fixed Radius: {params.fixedRadius}
-        </label>
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Fixed Radius</h3>
+            <p className="card-subtitle">Outer circle size</p>
+          </div>
+          <span className="text-lg font-semibold text-primary">{params.fixedRadius}</span>
+        </div>
         <input
           type="range"
           min="20"
@@ -91,9 +102,13 @@ export const Controls: React.FC<ControlsProps> = ({
 
       {/* Moving Radius */}
       <div className="card">
-        <label className="block text-sm font-medium mb-2">
-          Moving Radius: {params.movingRadius}
-        </label>
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Moving Radius</h3>
+            <p className="card-subtitle">Inner circle size</p>
+          </div>
+          <span className="text-lg font-semibold text-primary">{params.movingRadius}</span>
+        </div>
         <input
           type="range"
           min="10"
@@ -110,9 +125,13 @@ export const Controls: React.FC<ControlsProps> = ({
 
       {/* Pen Distance */}
       <div className="card">
-        <label className="block text-sm font-medium mb-2">
-          Pen Distance: {params.penDistance}
-        </label>
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Pen Distance</h3>
+            <p className="card-subtitle">Distance from center</p>
+          </div>
+          <span className="text-lg font-semibold text-primary">{params.penDistance}</span>
+        </div>
         <input
           type="range"
           min="0"
@@ -129,10 +148,17 @@ export const Controls: React.FC<ControlsProps> = ({
 
       {/* Revolutions */}
       <div className="card">
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium">
-            Revolutions: {params.stopOnOverlap ? overlapRevolutions.toFixed(1) : params.revolutions.toFixed(1)}
-          </label>
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Revolutions</h3>
+            <p className="card-subtitle">Number of rotations</p>
+          </div>
+          <span className="text-lg font-semibold text-primary">
+            {params.stopOnOverlap ? overlapRevolutions.toFixed(1) : params.revolutions.toFixed(1)}
+          </span>
+        </div>
+        
+        <div className="flex items-center justify-between mb-3">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -175,38 +201,47 @@ export const Controls: React.FC<ControlsProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="space-y-3">
-        <button
-          onClick={onGenerate}
-          disabled={isGenerating || !!validationError}
-          className="btn btn-primary w-full"
-        >
-          <Play size={16} />
-          {isGenerating ? 'Generating...' : 'Generate Pattern'}
-        </button>
-        
-        <div className="flex gap-2">
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">Actions</h3>
+          <p className="card-subtitle">Generate and control</p>
+        </div>
+        <div className="space-y-3">
           <button
-            onClick={resetToDefaults}
-            className="btn btn-secondary flex-1"
+            onClick={onGenerate}
+            disabled={isGenerating || !!validationError}
+            className="btn btn-primary w-full"
           >
-            <RotateCcw size={16} />
-            Reset
+            <Play size={16} />
+            {isGenerating ? 'Generating...' : 'Generate Pattern'}
           </button>
           
-          <button
-            onClick={generateRandomParams}
-            className="btn btn-secondary flex-1"
-          >
-            <Sparkles size={16} />
-            Random
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={resetToDefaults}
+              className="btn btn-secondary flex-1"
+            >
+              <RotateCcw size={16} />
+              Reset
+            </button>
+            
+            <button
+              onClick={generateRandomParams}
+              className="btn btn-secondary flex-1"
+            >
+              <Sparkles size={16} />
+              Random
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Quick Presets */}
       <div className="card">
-        <h4 className="text-sm font-medium mb-3">Quick Presets</h4>
+        <div className="card-header">
+          <h3 className="card-title">Quick Presets</h3>
+          <p className="card-subtitle">Pre-configured patterns</p>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           {[
             { name: 'Cardioid', params: { fixedRadius: 100, movingRadius: 50, penDistance: 30, revolutions: 2, stopOnOverlap: false } },
@@ -220,6 +255,48 @@ export const Controls: React.FC<ControlsProps> = ({
               className="btn btn-secondary text-xs py-2"
             >
               {preset.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Paper Color */}
+      <div className="card">
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">Paper Color</h3>
+            <p className="card-subtitle">Background color</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={paperColor}
+              onChange={(e) => {
+                console.log('Paper color changed to:', e.target.value);
+                onPaperColorChange(e.target.value);
+              }}
+              className="w-8 h-8 rounded border border-border cursor-pointer"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { name: 'Cornsilk', color: '#fff8dc' },
+            { name: 'White', color: '#ffffff' },
+            { name: 'Cream', color: '#f5f5dc' },
+            { name: 'Ivory', color: '#fffff0' },
+            { name: 'Beige', color: '#f5f5dc' },
+            { name: 'Parchment', color: '#f0e68c' }
+          ].map((paper) => (
+            <button
+              key={paper.name}
+              onClick={() => {
+                console.log('Paper preset clicked:', paper.name, paper.color);
+                onPaperColorChange(paper.color);
+              }}
+              className="btn btn-secondary text-xs py-1"
+            >
+              {paper.name}
             </button>
           ))}
         </div>

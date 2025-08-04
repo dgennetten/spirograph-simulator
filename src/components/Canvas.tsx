@@ -26,7 +26,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       canvasRef.current = node;
     };
 
-    // Initialize canvas
+        // Initialize canvas
     useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -38,57 +38,80 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       canvas.width = settings.width;
       canvas.height = settings.height;
 
-      // Clear canvas
+      // Clear canvas and fill with paper color
+      console.log('Canvas paper color:', settings.paperColor);
       ctx.clearRect(0, 0, settings.width, settings.height);
+      ctx.fillStyle = settings.paperColor;
+      ctx.fillRect(0, 0, settings.width, settings.height);
 
       // Draw grid
       drawGrid(ctx, settings);
 
       // Draw layers
       drawLayers(ctx, layers, settings);
-    }, [layers, settings]);
+    }, [layers, settings, settings.paperColor]);
 
-    const drawGrid = (ctx: CanvasRenderingContext2D, settings: CanvasSettings) => {
-      const { width, height, centerX, centerY, scale } = settings;
-      
-      ctx.save();
-      ctx.strokeStyle = '#2a2a3e';
-      ctx.lineWidth = 1;
-      ctx.globalAlpha = 0.3;
+    // Separate effect for paper color changes
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-      // Draw grid lines
-      const gridSize = 50 * scale;
-      
-      // Vertical lines
-      for (let x = centerX % gridSize; x < width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-      }
-      
-      // Horizontal lines
-      for (let y = centerY % gridSize; y < height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-      }
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-      // Draw center cross
-      ctx.strokeStyle = '#667eea';
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.5;
+      console.log('Paper color effect triggered:', settings.paperColor);
       
-      ctx.beginPath();
-      ctx.moveTo(centerX - 10, centerY);
-      ctx.lineTo(centerX + 10, centerY);
-      ctx.moveTo(centerX, centerY - 10);
-      ctx.lineTo(centerX, centerY + 10);
-      ctx.stroke();
+      // Clear and redraw background
+      ctx.clearRect(0, 0, settings.width, settings.height);
+      ctx.fillStyle = settings.paperColor;
+      ctx.fillRect(0, 0, settings.width, settings.height);
 
-      ctx.restore();
-    };
+      // Redraw grid and layers
+      drawGrid(ctx, settings);
+      drawLayers(ctx, layers, settings);
+    }, [settings.paperColor]);
+
+                    const drawGrid = (ctx: CanvasRenderingContext2D, settings: CanvasSettings) => {
+                  const { width, height, centerX, centerY, scale } = settings;
+
+                  ctx.save();
+                  ctx.strokeStyle = '#cbd5e1';
+                  ctx.lineWidth = 1;
+                  ctx.globalAlpha = 0.4;
+
+                  // Draw grid lines
+                  const gridSize = 50 * scale;
+
+                  // Vertical lines
+                  for (let x = centerX % gridSize; x < width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                  }
+
+                  // Horizontal lines
+                  for (let y = centerY % gridSize; y < height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                  }
+
+                  // Draw center cross
+                  ctx.strokeStyle = '#2563eb';
+                  ctx.lineWidth = 2;
+                  ctx.globalAlpha = 0.6;
+
+                  ctx.beginPath();
+                  ctx.moveTo(centerX - 10, centerY);
+                  ctx.lineTo(centerX + 10, centerY);
+                  ctx.moveTo(centerX, centerY - 10);
+                  ctx.lineTo(centerX, centerY + 10);
+                  ctx.stroke();
+
+                  ctx.restore();
+                };
 
     const drawLayers = (ctx: CanvasRenderingContext2D, layers: Layer[], settings: CanvasSettings) => {
       const { scale } = settings;

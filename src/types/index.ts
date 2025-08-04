@@ -28,6 +28,7 @@ export interface CanvasSettings {
   centerX: number;
   centerY: number;
   scale: number;
+  paperColor: string;
 }
 
 export interface ExportSettings {
@@ -35,4 +36,5 @@ export interface ExportSettings {
   width: number;
   height: number;
   includeMetadata: boolean;
+  paperColor: string;
 } 

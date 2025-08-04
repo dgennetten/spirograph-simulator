@@ -1,15 +1,16 @@
 :root {
-  --primary: #667eea;
-  --secondary: #764ba2;
-  --accent: #f093fb;
-  --background: #0f0f23;
-  --surface: #1a1a2e;
-  --text: #ffffff;
-  --text-secondary: #a0a0a0;
-  --border: #2a2a3e;
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --error: #f87171;
+  --primary: #2563eb;
+  --secondary: #7c3aed;
+  --accent: #f59e0b;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --paper: #fff8dc;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
 }
 
 * {
@@ -119,7 +120,7 @@ body {
 }
 
 .btn-primary:hover {
-  background: #5a6fd8;
+  background: #1d4ed8;
   transform: translateY(-1px);
 }
 
@@ -182,7 +183,8 @@ body {
   border-radius: 50%;
   background: var(--primary);
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border: 2px solid white;
 }
 
 .slider::-moz-range-thumb {
@@ -191,22 +193,51 @@ body {
   border-radius: 50%;
   background: var(--primary);
   cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* Card styles */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   padding: 1.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
 }
 
 .card:hover {
   border-color: var(--primary);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 /* Animation classes */
@@ -232,6 +263,7 @@ body {
 @media (max-width: 768px) {
   .card {
     padding: 1rem;
+    margin-bottom: 1rem;
   }
   
   .text-2xl {
@@ -240,5 +272,30 @@ body {
   
   .p-6 {
     padding: 1rem;
+  }
+  
+  .sidebar {
+    width: 100% !important;
+    position: relative !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .main-layout {
+    flex-direction: column !important;
+  }
+  
+  .canvas-container {
+    height: 50vh !important;
+    min-height: 300px;
+  }
+  
+  .panel-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .panel-tab {
+    flex: 1;
+    min-width: 120px;
   }
 } 
